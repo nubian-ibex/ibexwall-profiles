@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ibexwall.com/schemas/compliance-profile.schema.json",
+  "title": "IbexWall compliance profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["framework", "version", "controls"],
+  "properties": {
+    "framework": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The framework or standard name, as the product shows it."
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The framework version the mappings were checked against."
+    },
+    "controls": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/control" }
+    }
+  },
+  "$defs": {
+    "control": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["control_id", "title", "kind"],
+      "properties": {
+        "control_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*(\\.[a-z0-9][a-z0-9-]*)*$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Our own wording, never the framework's protected text."
+        },
+        "kind": {
+          "enum": ["automated", "attestation"]
+        },
+        "checks": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-z][a-z0-9_.-]*$" }
+        },
+        "references": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/reference" }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "kind": { "const": "automated" } }
+          },
+          "then": {
+            "required": ["checks"],
+            "properties": { "checks": { "minItems": 1 } }
+          }
+        },
+        {
+          "if": {
+            "properties": { "kind": { "const": "attestation" } }
+          },
+          "then": {
+            "properties": { "checks": { "maxItems": 0 } }
+          }
+        }
+      ]
+    },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "url", "date"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The clause, article or control number, cited by number."
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "date": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "description": "When the reference was consulted (YYYY-MM-DD)."
+        }
+      }
+    }
+  }
+}
