@@ -92,6 +92,7 @@ controls:
     kind: automated
     checks:
       - nts.authenticated_time
+      - nts.synchronized
 
   - control_id: "baseline.hardening"
     title: "The hardening catalog and kernel sysctls are applied"
@@ -124,6 +125,45 @@ controls:
     kind: automated
     checks:
       - posture.firmware_hsi
+
+  - control_id: "baseline.audit"
+    title: "Audit and logs are collected, persisted and bounded"
+    kind: automated
+    checks:
+      - audit.auditd
+      - audit.journald
+
+  - control_id: "baseline.password-policy"
+    title: "Passwords expire and inactive accounts lock"
+    kind: automated
+    checks:
+      - accounts.password_max_age
+      - accounts.inactive
+
+  - control_id: "baseline.file-perms"
+    title: "Sensitive files keep their mode and sudo logs what it runs"
+    kind: automated
+    checks:
+      - accounts.file_perms
+      - accounts.sudo_logging
+
+  - control_id: "baseline.login-banner"
+    title: "A login banner is shown"
+    kind: automated
+    checks:
+      - accounts.login_banner
+
+  - control_id: "baseline.package-signatures"
+    title: "Package signatures are verified"
+    kind: automated
+    checks:
+      - updates.signatures
+
+  - control_id: "baseline.default-deny"
+    title: "The firewall denies inbound by default"
+    kind: automated
+    checks:
+      - firewall.default_deny
 
   - control_id: "baseline.backups"
     title: "Backups are taken, tested and restorable"
